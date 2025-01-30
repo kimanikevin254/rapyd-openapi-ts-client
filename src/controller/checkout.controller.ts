@@ -4,17 +4,12 @@ import { AppDataSource } from "../database/data-source";
 import { Order, OrderStatus } from "../database/entity/order.entity";
 import { User } from "../database/entity/user.entity";
 import { Payment, PaymentStatus } from "../database/entity/payment.entity";
-import { CheckoutPageApi, Configuration } from "../../rapyd-client";
-import { signRequest } from "../utils/signRapydRequest";
 import { Cart } from "../database/entity/cart.entity";
 
 class CheckoutController {
     private orderRepository = AppDataSource.getRepository(Order);
     private paymentRepository = AppDataSource.getRepository(Payment);
     private cartRepository = AppDataSource.getRepository(Cart);
-    
-    private config = new Configuration({});
-    private checkoutPageApi = new CheckoutPageApi(this.config) ;
 
     index = async (_req: Request, res: Response, next: NextFunction) => {
         try {
@@ -76,33 +71,7 @@ class CheckoutController {
             order.payment = payment;
             await this.orderRepository.save(order);
 
-            // Generate a checkout page
-            const rapydRequestBody = { 
-                amount: order.totalAmount, 
-                country: 'IT', 
-                currency: "USD", 
-                complete_checkout_url: `${process.env.BASE_URI}/checkout/success`, 
-                cancel_checkout_url: `${process.env.BASE_URI}/cart`, 
-                payment_method_type: "it_visa_card",
-            };
-
-            const { salt, timestamp, signature, idempotency } = signRequest("POST", "/v1/checkout", JSON.stringify(rapydRequestBody));
-
-            const { data } = await this.checkoutPageApi.generateHostedPagePayment(
-                process.env.RAPYD_ACCESS_KEY,
-                'application/json',
-                salt,
-                signature,
-                timestamp,
-                idempotency,
-                rapydRequestBody
-            )
-
-            // Update payment with the Rapyd checkout ID
-            await this.paymentRepository.update(payment.id, { rapydCheckoutId: data.data.id });
-
-            // Redirect user to payment page
-            res.json({ success: true, paymentPageUrl: data.data.redirect_url })
+            res.json({ success: true })
         } catch (error) {
             next(error);
         }
