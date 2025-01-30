@@ -83,6 +83,7 @@ class CheckoutController {
                 currency: "USD", 
                 complete_checkout_url: `${process.env.BASE_URI}/checkout/success`, 
                 cancel_checkout_url: `${process.env.BASE_URI}/cart`, 
+                payment_method_type: "it_visa_card",
             };
 
             const { salt, timestamp, signature, idempotency } = signRequest("POST", "/v1/checkout", JSON.stringify(rapydRequestBody));

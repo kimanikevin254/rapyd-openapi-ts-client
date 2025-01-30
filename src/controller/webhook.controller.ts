@@ -24,11 +24,8 @@ class WebhookController {
 
             if (!payment) { return; }
 
-            console.log('Payment', payment);
-
             // Update payment with the Rapyd payment ID
             await this.paymentRepository.update(payment.id, { rapydPaymentId, status: PaymentStatus.COMPLETED })
-            console.log('Updated payment');
 
             // Mark order as COMPLETED
             await this.orderRepository.update(payment.order.id, { status: OrderStatus.COMPLETED });
