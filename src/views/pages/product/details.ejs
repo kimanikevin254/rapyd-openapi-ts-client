@@ -1,0 +1,86 @@
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+    .product-details-container {
+        max-width: 800px;
+        margin: 3rem auto;
+        background: white;
+        border-radius: 8px;
+        padding: 2rem;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .product-details-container img {
+        width: auto;
+        height: 100%;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+    .product-details-container h1 {
+        color: #343a40;
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+    .product-details-container p {
+        margin-bottom: 0.5rem;
+        color: #6c757d;
+    }
+    .product-details-container .price {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #007bff;
+        margin-bottom: 1rem;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #004085;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="product-details-container d-flex align-items-center gap-4">
+        <% if (product.imageUrl) { %>
+            <img src="<%= product.imageUrl %>" alt="<%= product.name %>">
+        <% } %>
+        <div>
+            <h1><%= product.name %></h1>
+            
+            <% if (product.description) { %>
+                <p><%= product.description %></p>
+            <% } %>
+
+            <div class="d-flex align-items-center justify-content-between">
+                <p class="price">$<%= product.price.toFixed(2) %></p>
+                <button id="add-to-cart" class="btn btn-primary">Add to Cart</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('add-to-cart').addEventListener('click', () => {
+        const product = JSON.parse(`<%- JSON.stringify(product) %>`);
+        const cart = JSON.parse(localStorage.getItem('rapyd-cart')) || [];
+        
+        // Check if the product is already in the cart
+        const existingProduct = cart.find(item => item.id === product.id);
+        
+        if (existingProduct) {
+            // Increment the quantity if the product already exists
+            existingProduct.quantity += 1;
+        } else {
+            // Add new product with quantity 1
+            cart.push({ id: product.id, name: product.name, price: product.price, imageUrl: product.imageUrl, quantity: 1 });
+        }
+
+        // Save the updated cart back to localStorage
+        localStorage.setItem('rapyd-cart', JSON.stringify(cart));
+
+        // Dispatch a custom event to notify that the cart has been updated
+        window.dispatchEvent(new Event('cart-updated'));
+    });
+</script>

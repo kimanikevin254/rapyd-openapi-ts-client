@@ -1,0 +1,81 @@
+<div class="container mt-5">
+    <h2 class="mb-4">Your Cart</h2>
+    
+    <div id="cart-content">
+        <div class="text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mt-4">
+        <h4>Total: $<span id="cart-total">0.00</span></h4>
+        <button id="proceed-to-checkout" class="btn btn-success" disabled>Proceed to Checkout</button>
+    </div>
+</div>
+
+<script>
+    // Retrieve cart items from storage and display them on page load
+    const cartItems = JSON.parse(localStorage.getItem("rapyd-cart")) || [];
+
+    document.addEventListener("DOMContentLoaded", async function () {
+        const cartContent = document.getElementById("cart-content");
+        const cartTotalElement = document.getElementById("cart-total");
+        const checkoutButton = document.getElementById("proceed-to-checkout");
+
+        if (cartItems.length === 0) {
+            cartContent.innerHTML = "<p class='text-center text-muted'>Your cart is empty.</p>";
+            return;
+        }
+
+        let total = 0;
+
+        cartContent.innerHTML = '<div class="list-group"></div>';
+        const listGroup = cartContent.querySelector('.list-group');
+
+        cartItems.forEach(item => {
+            const product = cartItems.find(i => i.id === item.id);
+            const subtotal = item.price * product.quantity;
+            total += subtotal;
+
+            listGroup.innerHTML += `
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <img src="${item.imageUrl}" alt="${product.name}" class="me-3 rounded" style="width: 50px; height: 50px;">
+                        <div>
+                            <h5 class="mb-1">${item.name}</h5>
+                            <p class="mb-1 text-muted">Price: $${item.price.toFixed(2)} | Quantity: ${item.quantity}</p>
+                        </div>
+                    </div>
+                    <strong>$${subtotal.toFixed(2)}</strong>
+                </div>
+            `;
+        });
+
+        cartTotalElement.textContent = total.toFixed(2);
+        checkoutButton.disabled = false;
+    });
+
+    // Checkout button click flow
+    document.getElementById("proceed-to-checkout").addEventListener("click", async function () {
+        try {
+            const payload = cartItems.map((item) => ({ id: item.id, quantity: item.quantity }));
+            
+            const response = await fetch('/cart', {
+                method: 'POST',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            })
+
+            if(!response.ok) { throw new Error('Failed to save cart') }
+
+            const data = await response.json();
+
+            window.location.href = `/checkout?cartId=${data.cartId}`
+        } catch (error) {
+            console.log(error);
+            alert('Something went wrong');
+        }
+    });
+</script>

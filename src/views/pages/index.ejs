@@ -1,0 +1,73 @@
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+    .products-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 1rem;
+    }
+    .product-card {
+        background: white;
+        border-radius: 8px;
+        padding: 1rem;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .product-card img {
+        width: auto;
+        height: 100%;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+    .product-card h5 {
+        margin-top: 1rem;
+        font-size: 1.25rem;
+        color: #343a40;
+    }
+    .product-card p {
+        margin: 0.5rem 0;
+        color: #6c757d;
+    }
+    .product-card .price {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #007bff;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #004085;
+    }
+</style>
+
+<div class="container">
+    <div class="products-container">
+        <h1 class="text-center mb-4">Our Products</h1>
+        <% if (products.length === 0) { %>
+            <p class="text-center">No products available at the moment.</p>
+        <% } else { %>
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                <% products.forEach(product => { %>
+                    <div class="col">
+                        <div class="product-card">
+                            <% if (product.imageUrl) { %>
+                                <img src="<%= product.imageUrl %>" alt="<%= product.name %>">
+                            <% } %>
+                            <h5><%= product.name %></h5>
+                            <div class="mt-4 d-flex align-items-center justify-content-between">
+                                <p class="price">$<%= product.price.toFixed(2) %></p>
+                                <a href="/products/<%= product.id %>" class="btn btn-primary">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        <% } %>
+    </div>
+</div>

@@ -1,0 +1,33 @@
+<nav class="navbar navbar-expand-lg" style="background-color: #007bff; padding: 1rem; margin-bottom: 20px;">
+    <div class="container-fluid">
+      <!-- Home Link -->
+      <a class="navbar-brand text-white" href="/" style="text-decoration: none;">Home</a>
+  
+      <!-- Cart Link -->
+      <div class="d-flex align-items-center gap-4">
+        <a href="/cart" class="text-white" style="text-decoration: none; position: relative;">
+          Cart: <span id="cart-count" class="fw-bold">0</span> items
+        </a>
+
+        <!-- <button class="btn btn-danger">Logout</button> -->
+         <form action="/auth/logout" method="get">
+          <button type="submit" class="btn btn-danger">Logout</button>
+         </form>
+      </div>
+    </div>
+</nav>  
+
+<script>
+    // Function to calculate and update the cart count
+    function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem('rapyd-cart')) || [];
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        document.getElementById('cart-count').textContent = totalItems;
+    }
+
+    // Call the function to initialize the count on page load
+    updateCartCount();
+
+    // Listen for the "cart-updated" event and update the count when triggered
+    window.addEventListener('cart-updated', updateCartCount);
+</script>
