@@ -14,7 +14,7 @@ class CheckoutController {
     private cartRepository = AppDataSource.getRepository(Cart);
     
     private config = new Configuration({});
-    private checkoutPageApi = new CheckoutPageApi(this.config) ;
+    private checkoutPageApi = new CheckoutPageApi(this.config);
 
     index = async (_req: Request, res: Response, next: NextFunction) => {
         try {
@@ -96,7 +96,7 @@ class CheckoutController {
                 timestamp,
                 idempotency,
                 rapydRequestBody
-            )
+            );
 
             // Update payment with the Rapyd checkout ID
             await this.paymentRepository.update(payment.id, { rapydCheckoutId: data.data.id });
