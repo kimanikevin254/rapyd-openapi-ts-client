@@ -21,7 +21,7 @@ export function signRequest(httpMethod: string, path: string, requestJson: strin
     const signature = Buffer.from(hash.digest("hex")).toString("base64");
     
     // Idempotency
-    const idempotency = `${timestamp}${salt}`
+    const idempotency = `${timestamp}${salt}`;
   
     return { salt, timestamp, signature, idempotency };
 }
