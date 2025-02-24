@@ -15,8 +15,10 @@ class WebhookController {
 
             if (req.body.type !== "PAYMENT_COMPLETED") { return; }
 
+            console.log("Payment Completed event received...");
+
             const completePaymentUrl: string = req.body.data.complete_payment_url;
-            const rapydCheckoutId: string = completePaymentUrl.split('/')[completePaymentUrl.split('/').length]
+            const rapydCheckoutId: string = completePaymentUrl.split('/')[completePaymentUrl.split('/').length];
             const rapydPaymentId: string = req.body.data.id;
 
             // Retrieve payment
@@ -25,11 +27,13 @@ class WebhookController {
             if (!payment) { return; }
 
             // Update payment with the Rapyd payment ID
-            await this.paymentRepository.update(payment.id, { rapydPaymentId, status: PaymentStatus.COMPLETED })
+            await this.paymentRepository.update(payment.id, { rapydPaymentId, status: PaymentStatus.COMPLETED });
+
+            console.log("Updated payment", payment.id);
 
             // Mark order as COMPLETED
             await this.orderRepository.update(payment.order.id, { status: OrderStatus.COMPLETED });
-            console.log('Updated order');
+            console.log("Updated order", payment.order.id);
         } catch (error) {
             console.log(error);
             next(error);
