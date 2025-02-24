@@ -5,7 +5,7 @@ const SECRET_KEY = process.env.RAPYD_SECRET_KEY;
 
 export function signRequest(httpMethod: string, path: string, requestJson: string = '') {
     const salt = crypto.randomBytes(12).toString('base64');
-    const timestamp = (Math.floor(new Date().getTime() / 1000)).toString();
+    const timestamp = Math.floor(new Date().getTime() / 1000).toString();
     let body = requestJson;
 
     if (JSON.stringify(requestJson) !== '{}' && requestJson !== '' && typeof requestJson !=='object' ){
